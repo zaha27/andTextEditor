@@ -8,5 +8,8 @@
 #define MAX_LINE 256
 
 void open_and_view_file(const char *filename);
+void givehelp();
+void give_edit(const char *x);
+void give_insert(const char *x);
 
 #endif
