@@ -12,6 +12,8 @@ int main() {
         scanf("%9s", command);
         if (strcmp(command, "/h") == 0) {
             givehelp();
+        } else if (strcmp(command, "/ai") == 0){
+            give_advanced_insert(filename);
         } else if (strcmp(command, "/i") == 0) {
             give_insert(filename);
         } else if (strcmp(command, "/v") == 0) { 

@@ -23,6 +23,7 @@ void givehelp() {
     printf("/v - View the file again\n");
     printf("/e - Edit the file\n");
     printf("/i - Enter Insert mode\n");
+    printf("/ai - Enter Advanced Insert mode\n");
     printf("/q - Quit\n");
 }
 
@@ -150,7 +151,7 @@ void give_insert(const char *filename) {
         printf("> ");
         fgets(line, MAX_LINE, stdin);
 
-        if (strcmp(line, ":q\n") == 0) {
+        if (strcmp(line, "q\n") == 0) {
             printf("--- Ieșire din mod Insert ---\n");
             break;
         }
@@ -160,4 +161,73 @@ void give_insert(const char *filename) {
     fclose(file);
 }
 
+void give_advanced_insert(const char *filename) {
+    FILE *file = fopen(filename, "r+"); 
+    if (!file) {
+        perror("Eroare la deschiderea fisierului pentru modul Insert");
+        return;
+    }
 
+    char lines[100][MAX_LINE];
+    int total_lines = 0;
+    printf("\n---- Continutul fisierului '%s' ----\n", filename);
+    while (fgets(lines[total_lines], MAX_LINE, file)) {
+        printf("%d: %s", total_lines + 1, lines[total_lines]);
+        total_lines++;
+    }
+    printf("\n--- Mod Insert ---\n");
+    printf("Comenzi disponibile:\n");
+    printf("a <text>   - Adauga o linie noua\n");
+    printf("d <număr>  - Sterge linia specificata\n");
+    printf("m <număr>  - Modifică linia specificata\n");
+    printf("q          - Salveaza si iesi\n");
+
+    char command[MAX_LINE];
+    while (1) {
+        printf("> ");
+        fgets(command, MAX_LINE, stdin);
+
+        if (strcmp(command, "q\n") == 0) {
+            break;
+        }
+
+        if (strncmp(command, "a", 2) == 0) {
+            char *new_line = command + 3; 
+            strcpy(lines[total_lines], new_line);
+            total_lines++;
+            printf("Linia a fost adăugata.\n");
+        }
+        else if (strncmp(command, "d", 2) == 0) {
+            int line_to_delete = atoi(command + 3);
+            if (line_to_delete < 1 || line_to_delete > total_lines) {
+                printf("Linie invalida!\n");
+            } else {
+                for (int i = line_to_delete - 1; i < total_lines - 1; i++) {
+                    strcpy(lines[i], lines[i + 1]);
+                }
+                total_lines--;
+                printf("Linia %d a fost stearsa.\n", line_to_delete);
+            }
+        }
+        else if (strncmp(command, "m", 2) == 0) {
+            int line_to_modify = atoi(command + 3);
+            if (line_to_modify < 1 || line_to_modify > total_lines) {
+                printf("Linie invalidă!\n");
+            } else {
+                printf("Scrie noul text pentru linia %d: ", line_to_modify);
+                fgets(lines[line_to_modify - 1], MAX_LINE, stdin);
+                printf("Linia %d a fost modificată.\n", line_to_modify);
+            }
+        }
+        else {
+            printf("Comandă necunoscută. Încearcă din nou.\n");
+        }
+    }
+    freopen(filename, "w", file);
+    for (int i = 0; i < total_lines; i++) {
+        fputs(lines[i], file);
+    }
+    fclose(file);
+
+    printf("--- Modificările au fost salvate. Ieșire din mod Insert ---\n");
+}

@@ -1,0 +1,9 @@
+abcd
+
+
+avcd
+/q
+ls
+abcd
+
+:wq
